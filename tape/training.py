@@ -132,7 +132,8 @@ class BackwardRunner(ForwardRunner):
         self.max_grad_norm = max_grad_norm
         self._global_step = 0
         self._local_rank = local_rank
-        self._overflow_buf = torch.cuda.IntTensor([0])  # type: ignore
+        # self._overflow_buf = torch.cuda.IntTensor([0])  # type: ignore
+        self._overflow_buf = torch.IntTensor([0])
         self.gradient_accumulation_steps = gradient_accumulation_steps
         self._delay_accumulation = fp16 and local_rank != -1
 
@@ -296,6 +297,8 @@ def run_train_epoch(epoch_id: int,
 
     start_t = timer()
     for step, batch in enumerate(train_loader):
+        if step % 20 == 0:
+            logger.debug(f'Step {step} for epoch {epoch_id}')
         loss, metrics = runner.forward(batch)  # type: ignore
         runner.backward(loss)
         accumulator.update(loss, metrics, step=False)
@@ -504,6 +507,7 @@ def run_train(model_type: str,
     # ACTUAL TRAIN/EVAL LOOP #
     with utils.wrap_cuda_oom_error(local_rank, batch_size, n_gpu, gradient_accumulation_steps):
         for epoch_id in range(start_epoch, num_train_epochs):
+            logger.debug(f'Starting epoch {epoch_id}')
             run_train_epoch(epoch_id, train_loader, runner,
                             viz, num_log_iter, gradient_accumulation_steps)
             if eval_freq > 0 and (epoch_id + 1) % eval_freq == 0:

@@ -188,6 +188,7 @@ def run_train(args: typing.Optional[argparse.Namespace] = None, env=None) -> Non
         raise RuntimeError(f"Missing arguments: {missing}")
     train_args = {name: arg_dict[name] for name in arg_names}
 
+    print(train_args)
     training.run_train(**train_args)
 
 
