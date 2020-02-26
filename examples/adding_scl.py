@@ -84,10 +84,9 @@ class SubCellularLocationClassDataset(Dataset):
         input_mask = np.ones_like(token_ids)
 
         # pad with -1s because of cls/sep tokens
-        labels = np.asarray([int(item['label'].split(" ")[1])], np.int64)
-        labels = np.pad(labels, (1, 1), 'constant', constant_values=-1)
+        label = int(item['label'].split(" ")[1])
 
-        return token_ids, input_mask, labels
+        return token_ids, input_mask, label
 
     def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
         """ Define a collate_fn to convert the variable length sequences into
@@ -100,7 +99,7 @@ class SubCellularLocationClassDataset(Dataset):
         input_ids, input_mask, scl_label = tuple(zip(*batch))
         input_ids = torch.from_numpy(pad_sequences(input_ids, 0))
         input_mask = torch.from_numpy(pad_sequences(input_mask, 0))
-        scl_label = torch.from_numpy(pad_sequences(scl_label, -1))
+        scl_label = torch.LongTensor(scl_label)
 
         output = {'input_ids': input_ids,
                   'input_mask': input_mask,
@@ -121,4 +120,4 @@ if __name__ == '__main__':
     tape/datasets.py.
     """
     from tape.main import run_train
-    run_train_distributed()
+    run_train()
