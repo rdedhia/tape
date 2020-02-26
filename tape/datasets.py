@@ -98,7 +98,8 @@ class FastaDataset(Dataset):
 
         item = {'id': record.id,
                 'primary': str(record.seq),
-                'protein_length': len(record.seq)}
+                'protein_length': len(record.seq),
+                'label': record.description}
         return item
 
 
