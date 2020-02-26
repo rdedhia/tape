@@ -12,6 +12,16 @@ Our paper is available at [https://arxiv.org/abs/1906.08230](https://arxiv.org/a
 
 Some documentation is incomplete. We will try to fill it in over time, but if there is something you would like an explanation for, please open an issue so we know where to focus our effort!
 
+## Capstone Specifics
+
+### Running Secondary Structure Locally
+
+Steps
+1. Clone the repo
+2. Download the secondary structure LMDB dataset, and unzip it into the `data` directory by running `tar -xzf secondary_structure.tar.gz -C ./data`. After doing this, from the root level of the project, you should have a file here: `data/secondary_structure/secondary_structure_train.lmdb`.
+3. Pip install the package. You can do this by running `pip install -e .` in your virtual environment. If you need to create a virtualenv, run `python3 -m venv venv` followed by `source venv/bin/activate` to activate your virtualenv
+4. Start secondary structure training by running `python tape/run_train_ss.py`. This is similar to running `tape-train transformer secondary_structure`, with some modification described in `tape/run_train_ss.py` such that you can run it locally.
+
 ## Contents
 
 * [Installation](#installation)
