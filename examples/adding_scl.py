@@ -26,6 +26,7 @@ from tape import ProteinBertForSequenceClassification
 import logging
 logger = logging.getLogger(__name__)
 
+
 # Register the dataset as a new TAPE task. Since it's a classification task
 # we need to tell TAPE how many labels the downstream model will use. If this
 # wasn't a classification task, that argument could simply be dropped.
@@ -119,5 +120,36 @@ if __name__ == '__main__':
     `run_eval`. Alternatively, you can add this dataset directly to
     tape/datasets.py.
     """
-    from tape.main import run_train
-    run_train()
+    TRAIN_ARGS = {
+        'model_type': 'transformer',
+        'task': 'subcellular_location',
+        'learning_rate': 0.0001,
+        'batch_size': 16,
+        'num_train_epochs': 1,
+        'num_log_iter': 2,
+        'fp16': False,
+        'warmup_steps': 10,
+        'gradient_accumulation_steps': 4,
+        'loss_scale': 0,
+        'max_grad_norm': 1.0,
+        'exp_name': None,
+        'from_pretrained': None,
+        'log_dir': './logs',
+        'eval_freq': 1,
+        'save_freq': 1,
+        'model_config_file': None,
+        'data_dir': '../data',
+        'output_dir': './results',
+        'no_cuda': False,
+        'seed': 42,
+        'local_rank': -1,
+        'tokenizer': 'iupac',
+        'num_workers': 1,
+        'debug': True,
+        'log_level': 'DEBUG',
+        'patience': -1,
+        'resume_from_checkpoint': False
+    }
+
+    from tape.training import run_train
+    run_train(**TRAIN_ARGS)

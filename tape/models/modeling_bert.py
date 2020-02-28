@@ -134,7 +134,14 @@ class ProteinBertEmbeddings(nn.Module):
             token_type_ids = torch.zeros_like(input_ids)
 
         words_embeddings = self.word_embeddings(input_ids)
-        position_embeddings = self.position_embeddings(position_ids)
+        try:
+            position_embeddings = self.position_embeddings(position_ids)
+        except:
+            print(input_ids)
+            print(token_type_ids)
+            print(position_ids)
+            print(seq_length)
+            print(words_embeddings)
         token_type_embeddings = self.token_type_embeddings(token_type_ids)
 
         embeddings = words_embeddings + position_embeddings + token_type_embeddings
