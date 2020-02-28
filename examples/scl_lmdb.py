@@ -19,7 +19,7 @@ from torch.utils.data import Dataset
 from pathlib import Path
 import numpy as np
 
-from tape.datasets import FastaDataset, pad_sequences
+from tape.datasets import LMDBDataset, pad_sequences
 from tape.registry import registry
 from tape.tokenizers import TAPETokenizer
 from tape import ProteinBertForSequenceClassification
@@ -65,8 +65,8 @@ class SubCellularLocationClassDataset(Dataset):
         # a JSONDataset, and an LMDBDataset. You can use these to load raw
         # data from your files (or of course, you can do this manually).
         data_path = Path(data_path)
-        data_file = f'deeploc_{split}.fasta'
-        self.data = FastaDataset(data_path / data_file, in_memory=in_memory)
+        data_file = f'deeploc/deeploc_{split}.lmdb'
+        self.data = LMDBDataset(data_path / data_file, in_memory=in_memory)
 
     def __len__(self) -> int:
         return len(self.data)
@@ -78,14 +78,9 @@ class SubCellularLocationClassDataset(Dataset):
             the amino acids to ids, and return the result.
         """
         item = self.data[index]
-        # tokenize + convert to numpy
         token_ids = self.tokenizer.encode(item['primary'])
-        # this will be the attention mask - we'll pad it out in
-        # collate_fn
         input_mask = np.ones_like(token_ids)
-
-        # pad with -1s because of cls/sep tokens
-        label = int(item['label'].split(" ")[1])
+        label = int(item['label'])
 
         return token_ids, input_mask, label
 
@@ -124,12 +119,12 @@ if __name__ == '__main__':
         'model_type': 'transformer',
         'task': 'subcellular_location',
         'learning_rate': 0.0001,
-        'batch_size': 2,
+        'batch_size': 4,
         'num_train_epochs': 1,
         'num_log_iter': 2,
         'fp16': False,
         'warmup_steps': 10,
-        'gradient_accumulation_steps': 1,
+        'gradient_accumulation_steps': 4,
         'loss_scale': 0,
         'max_grad_norm': 1.0,
         'exp_name': None,
@@ -138,7 +133,7 @@ if __name__ == '__main__':
         'eval_freq': 1,
         'save_freq': 1,
         'model_config_file': None,
-        'data_dir': '../data',
+        'data_dir': './data',
         'output_dir': './results',
         'no_cuda': True,
         'seed': 42,
