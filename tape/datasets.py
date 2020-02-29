@@ -631,7 +631,7 @@ class SubCellularLocationClassDataset(Dataset):
         # data from your files (or of course, you can do this manually).
         data_path = Path(data_path)
         data_file = f'deeploc/deeploc_{split}.lmdb'
-        self.data = LMDBDataset(data_path / data_file, in_memory=in_memory)
+        self.data = dataset_factory(data_path / data_file, in_memory)
 
     def __len__(self) -> int:
         return len(self.data)
