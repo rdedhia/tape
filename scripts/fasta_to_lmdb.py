@@ -1,3 +1,4 @@
+from collections import defaultdict
 from pathlib import Path
 import pickle
 import os
@@ -81,29 +82,32 @@ def read_sc_lmdb(split, verbose_flag=False):
         print(f'{split} has num_examples={num_examples}')
 
     if verbose_flag:
+        label_counts = defaultdict(int)
         with env.begin(write=False) as txn:
             for index in range(num_examples):
                 item = pickle.loads(txn.get(str(index).encode()))
                 if 'id' not in item:
                     item['id'] = str(index)
-                print(item)
+                label_counts[item['label']] += 1
+
+        print(label_counts)
 
 
 def main():
     # Train
     read_fasta('data/train.fasta', FASTA_TRAIN)
     write_sc_lmdb('train', FASTA_TRAIN)
-    read_sc_lmdb('train')
+    read_sc_lmdb('train', True)
 
     # Validation
     read_fasta('data/valid.fasta', FASTA_VALID)
     write_sc_lmdb('valid', FASTA_VALID)
-    read_sc_lmdb('valid')
+    read_sc_lmdb('valid', True)
 
     # Test
     read_fasta('data/test.fasta', FASTA_TEST)
     write_sc_lmdb('test', FASTA_TEST)
-    read_sc_lmdb('test')
+    read_sc_lmdb('test', True)
 
 
 if __name__ == '__main__':
