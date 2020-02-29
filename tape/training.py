@@ -132,8 +132,10 @@ class BackwardRunner(ForwardRunner):
         self.max_grad_norm = max_grad_norm
         self._global_step = 0
         self._local_rank = local_rank
-        # self._overflow_buf = torch.cuda.IntTensor([0])  # type: ignore
-        self._overflow_buf = torch.IntTensor([0])
+        if n_gpu > 0:
+            self._overflow_buf = torch.cuda.IntTensor([0])  # type: ignore
+        else:
+            self._overflow_buf = torch.IntTensor([0])
         self.gradient_accumulation_steps = gradient_accumulation_steps
         self._delay_accumulation = fp16 and local_rank != -1
 
