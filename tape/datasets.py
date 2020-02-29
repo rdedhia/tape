@@ -588,3 +588,82 @@ class SecondaryStructureDataset(Dataset):
                   'targets': ss_label}
 
         return output
+
+
+# Register the dataset as a new TAPE task. Since it's a classification task
+# we need to tell TAPE how many labels the downstream model will use. If this
+# wasn't a classification task, that argument could simply be dropped.
+@registry.register_task('subcellular_location', num_labels=11)
+class SubCellularLocationClassDataset(Dataset):
+    """
+    Defines the subcellular location prediction dataset.
+
+    Args:
+        data_path (Union[str, Path]): Path to tape data directory. By default, this is
+            assumed to be `./data`. Can be altered on the command line with the --data_dir
+            flag.
+        split (str): The specific dataset split to load often <train, valid, test>. In the
+            case of secondary structure, there are three test datasets so each of these
+            has a separate split flag.
+        tokenizer (str): The model tokenizer to use when returning tokenized indices.
+        in_memory (bool): Whether to load the entire dataset into memory or to keep
+            it on disk.
+    """
+
+    def __init__(self,
+                 data_path: Union[str, Path],
+                 split: str,
+                 tokenizer: Union[str, TAPETokenizer] = 'iupac',
+                 in_memory: bool = False):
+
+        if split not in ('train', 'test', 'valid'):
+            raise ValueError(f"Unrecognized split: {split}. Must be one of "
+                             f"['train', 'test', 'valid']")
+
+        if isinstance(tokenizer, str):
+            # If you get tokenizer in as a string, create an actual tokenizer
+            tokenizer = TAPETokenizer(vocab=tokenizer)
+        self.tokenizer = tokenizer
+
+        # Define the path to the data file. There are three helper datasets
+        # that you can import from tape.datasets - a FastaDataset,
+        # a JSONDataset, and an LMDBDataset. You can use these to load raw
+        # data from your files (or of course, you can do this manually).
+        data_path = Path(data_path)
+        data_file = f'deeploc/deeploc_{split}.lmdb'
+        self.data = LMDBDataset(data_path / data_file, in_memory=in_memory)
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    def __getitem__(self, index: int):
+        """ Return an item from the dataset. We've got an LMDBDataset that
+            will load the raw data and return dictionaries. We have to then
+            take that, load the keys that we need, tokenize and convert
+            the amino acids to ids, and return the result.
+        """
+        item = self.data[index]
+        token_ids = self.tokenizer.encode(item['primary'])
+        input_mask = np.ones_like(token_ids)
+        label = int(item['label'])
+
+        return token_ids, input_mask, label
+
+    def collate_fn(self, batch: List[Tuple[Any, ...]]) -> Dict[str, torch.Tensor]:
+        """ Define a collate_fn to convert the variable length sequences into
+            a batch of torch tensors. token ids and mask should be padded with
+            zeros. Labels for classification should be padded with -1.
+            This takes in a list of outputs from the dataset's __getitem__
+            method. You can use the `pad_sequences` helper function to pad
+            a list of numpy arrays.
+        """
+        input_ids, input_mask, scl_label = tuple(zip(*batch))
+        input_ids = torch.from_numpy(pad_sequences(input_ids, 0))
+        input_mask = torch.from_numpy(pad_sequences(input_mask, 0))
+        scl_label = torch.LongTensor(scl_label)
+
+        output = {'input_ids': input_ids,
+                  'input_mask': input_mask,
+                  'targets': scl_label}
+
+        return output

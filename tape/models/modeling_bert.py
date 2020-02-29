@@ -520,6 +520,7 @@ class ProteinBertForValuePrediction(ProteinBertAbstractModel):
 
 
 @registry.register_task_model('remote_homology', 'transformer')
+@registry.register_task_model('subcellular_location', 'transformer')
 class ProteinBertForSequenceClassification(ProteinBertAbstractModel):
 
     def __init__(self, config):
