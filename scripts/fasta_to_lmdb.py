@@ -20,11 +20,12 @@ def read_fasta(fasta_path, fasta_list):
         id = sequence.id
         label = sequence.description.split()[1]
         seq = str(sequence.seq)
-        fasta_list.append({
-            'id': id,
-            'label': label,
-            'primary': seq
-        })
+        if len(seq) < 1024:
+            fasta_list.append({
+                'id': id,
+                'label': label,
+                'primary': seq
+            })
 
 
 def read_ss_lmdb():
