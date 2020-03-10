@@ -21,12 +21,11 @@ def read_fasta(fasta_path, fasta_list):
         id = sequence.id
         label = sequence.description.split()[1]
         seq = str(sequence.seq)
-        if len(seq) < 1024:
-            fasta_list.append({
-                'id': id,
-                'label': label,
-                'primary': seq
-            })
+        fasta_list.append({
+            'id': id,
+            'label': label,
+            'primary': seq
+        })
 
 
 def read_ss_lmdb():
@@ -95,17 +94,17 @@ def read_sc_lmdb(split, verbose_flag=False):
 
 def main():
     # Train
-    read_fasta('data/train.fasta', FASTA_TRAIN)
+    read_fasta('data/deeploc_train.fasta', FASTA_TRAIN)
     write_sc_lmdb('train', FASTA_TRAIN)
     read_sc_lmdb('train', True)
 
     # Validation
-    read_fasta('data/valid.fasta', FASTA_VALID)
+    read_fasta('data/deeploc_valid.fasta', FASTA_VALID)
     write_sc_lmdb('valid', FASTA_VALID)
     read_sc_lmdb('valid', True)
 
     # Test
-    read_fasta('data/test.fasta', FASTA_TEST)
+    read_fasta('data/deeploc_test.fasta', FASTA_TEST)
     write_sc_lmdb('test', FASTA_TEST)
     read_sc_lmdb('test', True)
 

@@ -593,7 +593,8 @@ class SecondaryStructureDataset(Dataset):
 # Register the dataset as a new TAPE task. Since it's a classification task
 # we need to tell TAPE how many labels the downstream model will use. If this
 # wasn't a classification task, that argument could simply be dropped.
-@registry.register_task('subcellular_location', num_labels=11)
+# Setting num_labels to 10 after dropping ambiguous Cytoplasm-Nucleus class
+@registry.register_task('subcellular_location', num_labels=10)
 class SubCellularLocationClassDataset(Dataset):
     """
     Defines the subcellular location prediction dataset.
