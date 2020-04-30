@@ -92,6 +92,7 @@ class ProteinOneHotForValuePrediction(ProteinOneHotAbstractModel):
 
 
 @registry.register_task_model('remote_homology', 'onehot')
+@registry.register_task_model('subcellular_location', 'onehot')
 class ProteinOneHotForSequenceClassification(ProteinOneHotAbstractModel):
 
     def __init__(self, config):

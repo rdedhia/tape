@@ -291,6 +291,7 @@ class ProteinResNetForValuePrediction(ProteinResNetAbstractModel):
 
 
 @registry.register_task_model('remote_homology', 'resnet')
+@registry.register_task_model('subcellular_location', 'transformer')
 class ProteinResNetForSequenceClassification(ProteinResNetAbstractModel):
 
     def __init__(self, config):

@@ -229,6 +229,7 @@ class ProteinLSTMForValuePrediction(ProteinLSTMAbstractModel):
 
 
 @registry.register_task_model('remote_homology', 'lstm')
+@registry.register_task_model('subcellular_location', 'transformer')
 class ProteinLSTMForSequenceClassification(ProteinLSTMAbstractModel):
 
     def __init__(self, config):
