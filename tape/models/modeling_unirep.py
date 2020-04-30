@@ -206,6 +206,7 @@ class UniRepForValuePrediction(UniRepAbstractModel):
 
 
 @registry.register_task_model('remote_homology', 'unirep')
+@registry.register_task_model('subcellular location', 'unirep')
 class UniRepForSequenceClassification(UniRepAbstractModel):
 
     def __init__(self, config):
