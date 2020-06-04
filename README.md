@@ -80,7 +80,8 @@ pooled_output = output[1]
 Currently available pretrained models are:
 
 * bert-base (Transformer model)
-* babbler-1900 (UniRep model)
+* babbler-1900 ([UniRep](https://www.biorxiv.org/content/10.1101/589333v1) model)
+* xaa, xab, xac, xad, xae ([trRosetta](https://www.pnas.org/content/117/3/1496) model)
 
 If there is a particular pretrained model that you would like to use, please open an issue and we will try to add it!
 
@@ -194,6 +195,28 @@ tape-eval transformer secondary_structure results/<path_to_trained_model> --metr
 
 This will report the overall accuracy, and will also dump a `results.pkl` file into the trained model directory for you to analyze however you like.
 
+### trRosetta
+
+We have recently re-implemented the trRosetta model from Yang et. al. (2020). A link to the original repository, which was used as a basis for this re-implementation, can be found [here](https://github.com/gjoni/trRosetta). We provide a pytorch implementation and dataset to allow you to play around with the model. Data is available [here](http://s3.amazonaws.com/proteindata/data_pytorch/trrosetta.tar.gz). This is the same as the data in the original paper, however we've added train / val split files to allow you to train your own model reproducibly. To use this model
+
+```python
+from tape import TRRosetta
+from tape.datasets import TRRosettaDataset
+
+# Download data and place it under `<data_path>/trrosetta`
+
+train_data = TRRosettaDatset('<data_path>', 'train')  # will subsample MSAs
+valid_data = TRRosettaDatset('<data_path>', 'valid')  # will not subsample MSAs
+
+model = TRRosetta.from_pretrained('xaa')  # valid choices are 'xaa', 'xab', 'xac', 'xad', 'xae'. Each corresponds to one of the ensemble models.
+
+batch = train_data.collate_fn([train_data[0]])
+loss, predictions = model(**batch)
+```
+
+The predictions can be saved as `.npz` files and then fed into the [structure modeling scripts](https://yanglab.nankai.edu.cn/trRosetta/download/) provided by the Yang Lab.
+
+
 ### List of Models and Tasks
 
 The available models are:
@@ -203,6 +226,7 @@ The available models are:
 - `lstm`
 - `unirep` (pretrained available)
 - `onehot` (no pretraining required)
+- `trrosetta` (pretrained available)
 
 The available standard tasks are:
 
@@ -213,6 +237,8 @@ The available standard tasks are:
 - `remote_homology`
 - `fluorescence`
 - `stability`
+- `subcellular_location` (WIP)
+- `trrosetta` (can only be used with `trrosetta` model)
 
 The available models and tasks can be found in `tape/datasets.py` and `tape/models/modeling*.py`.
 
@@ -232,9 +258,9 @@ The unsupervised Pfam dataset is around 7GB compressed and 19GB uncompressed. Th
 
 ### Raw Data
 
-Raw data files are stored in JSON format for maximum portability. These are larger than the serialized TFRecord files (on average 3x larger). For all tasks except `proteinnet` we directly provide the output of our TFRecord parsing function on the file. For the `proteinnet` task we don't directly provide contact maps (as these massively increase the size of the files) and instead provide the 3D positions of all Carbon-alpha atoms. Note that this is in fact what is stored in the TFRecord files as well - our parsing function constructs the contact maps from this information on-the-fly.
+Raw data files are stored in JSON format for maximum portability. This data is JSON-ified, which removes certain constructs (in particular numpy arrays). As a result they cannot be directly loaded into the provided pytorch datasets (although the conversion should be quite easy by simply adding calls to `np.array`).
 
-[Pretraining Corpus (Pfam)](http://s3.amazonaws.com/proteindata/data_raw/pfam.tar.gz) __|__ [Secondary Structure](http://s3.amazonaws.com/proteindata/data_raw/secondary_structure.tar.gz) __|__ [Contact (ProteinNet)](http://s3.amazonaws.com/proteindata/data_raw/proteinnet.tar.gz) __|__ [Remote Homology](http://s3.amazonaws.com/proteindata/data_raw/remote_homology.tar.gz) __|__ [Fluorescence](http://s3.amazonaws.com/proteindata/data_raw/fluorescence.tar.gz) __|__ [Stability](http://s3.amazonaws.com/proteindata/data_raw/stability.tar.gz)
+[Pretraining Corpus (Pfam)](http://s3.amazonaws.com/proteindata/data_raw_pytorch/pfam.tar.gz) __|__ [Secondary Structure](http://s3.amazonaws.com/proteindata/data_raw_pytorch/secondary_structure.tar.gz) __|__ [Contact (ProteinNet)](http://s3.amazonaws.com/proteindata/data_raw_pytorch/proteinnet.tar.gz) __|__ [Remote Homology](http://s3.amazonaws.com/proteindata/data_raw_pytorch/remote_homology.tar.gz) __|__ [Fluorescence](http://s3.amazonaws.com/proteindata/data_raw_pytorch/fluorescence.tar.gz) __|__ [Stability](http://s3.amazonaws.com/proteindata/data_raw_pytorch/stability.tar.gz)
 
 
 ## Leaderboard
