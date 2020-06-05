@@ -43,3 +43,7 @@ some ROC curves to show the amount of signal for the different classes of the cl
 (q2) membrane bound vs water soluble protein task from the DeepLoc dataset in addition to the q10 subcellular location
 classification problem. As was done in the DeepLoc paper, we also attempted to treat this as a multitask  learning 
 problem, which was not as successful as running the models in isolation.
+
+## Data
+
+TODO: Describe each of the data files in the `data` folder

@@ -12,7 +12,14 @@ Our paper is available at [https://arxiv.org/abs/1906.08230](https://arxiv.org/a
 
 Some documentation is incomplete. We will try to fill it in over time, but if there is something you would like an explanation for, please open an issue so we know where to focus our effort!
 
-## Capstone Specifics
+## Extensions to TAPE
+
+In this fork, we introduce a few extensions to the existing tasks and capabilities supported by TAPE
+1. Adding a new task for subcellular location, based on the DeepLoc 
+[dataset](http://www.cbs.dtu.dk/services/DeepLoc-1.0/deeploc_data.fasta) 
+and [publication](https://academic.oup.com/bioinformatics/article/33/21/3387/3931857).
+2. Adding Jupyter notebooks for experimenting with TAPE embeddings and the subcellular location task in particular.
+This is described in more detail in [Notebooks.md](Notebooks.md).
 
 ### Running Secondary Structure Locally
 
@@ -449,5 +456,18 @@ __Stability:__
   pages={168--175},
   year={2017},
   publisher={American Association for the Advancement of Science}
+}
+```
+
+__Subcellular Location:__
+```
+@article{10.1093/bioinformatics/btx431,
+    title = {DeepLoc: prediction of protein subcellular localization using deep learning},
+    author = {Almagro Armenteros, José Juan and Sønderby, Casper Kaae and Sønderby, Søren Kaae and Nielsen, Henrik and Winther, Ole},
+    journal = {Bioinformatics},
+    volume = {33},
+    number = {21},
+    pages = {3387-3395},
+    year = {2017}
 }
 ```
