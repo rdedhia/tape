@@ -1,5 +1,3 @@
-
-
 # Tasks Assessing Protein Embeddings (TAPE)
 
 ![](https://github.com/songlab-cal/tape/workflows/Build/badge.svg)
@@ -20,14 +18,6 @@ In this fork, we introduce a few extensions to the existing tasks and capabiliti
 and [publication](https://academic.oup.com/bioinformatics/article/33/21/3387/3931857).
 2. Adding Jupyter notebooks for experimenting with TAPE embeddings and the subcellular location task in particular.
 This is described in more detail in [Notebooks.md](Notebooks.md).
-
-### Running Secondary Structure Locally
-
-Steps
-1. Clone the repo
-2. Download the secondary structure LMDB dataset, and unzip it into the `data` directory by running `tar -xzf secondary_structure.tar.gz -C ./data`. After doing this, from the root level of the project, you should have a file here: `data/secondary_structure/secondary_structure_train.lmdb`.
-3. Pip install the package. You can do this by running `pip install -e .` in your virtual environment. If you need to create a virtualenv, run `python3 -m venv venv` followed by `source venv/bin/activate` to activate your virtualenv
-4. Start secondary structure training by running `python tape/run_train_ss.py`. This is similar to running `tape-train transformer secondary_structure`, with some modification described in `tape/run_train_ss.py` such that you can run it locally.
 
 ## Contents
 
